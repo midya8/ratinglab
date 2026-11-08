@@ -41,7 +41,27 @@ class InfluenceTests(unittest.TestCase):
     def test_saved_source_unchanged_and_reference_reproduction(self):
         root=Path(__file__).resolve().parents[1];before={str(p):p.read_bytes() for p in (root/'ratinglab/artifacts').glob('*.json')};refs=json.loads(before[str(root/'ratinglab/artifacts/influence-reference.json')])
         with tempfile.TemporaryDirectory() as tmp:
-            path=Path(tmp)/'refs.json';self.assertEqual(references(path),refs)
+            path=Path(tmp)/'refs.json';actual=references(path)
+            self.assertEqual(json.loads(path.read_text()),actual)
+            metadata={'model_id','side','index','source_row','query_other','delete','delta'}
+            def compare(got,want):
+                self.assertEqual(len(got),len(want))
+                for a,b in zip(got,want):
+                    self.assertEqual(a.keys(),b.keys())
+                    for key in a:
+                        if key in metadata:
+                            self.assertIs(type(a[key]),type(b[key]));self.assertEqual(a[key],b[key])
+                        else:
+                            self.assertTrue(np.isfinite(np.asarray(a[key])).all(),key)
+                            np.testing.assert_allclose(a[key],b[key],atol=2e-10,rtol=2e-10,err_msg=key)
+            compare(actual,refs)
+            # Independent platform rounding is tolerated; meaningful drift,
+            # changed discrete metadata and non-finite results must still fail.
+            for key,value in [('source_row',-1),('score',actual[0]['score']+1e-5),('score',float('nan'))]:
+                broken=copy.deepcopy(actual);broken[0][key]=value
+                with self.assertRaises(AssertionError):compare(broken,refs)
+            rounded=copy.deepcopy(actual);rounded[0]['score']+=1e-12
+            compare(rounded,refs)
         self.assertEqual(len(refs),576);self.assertEqual(before,{str(p):p.read_bytes() for p in (root/'ratinglab/artifacts').glob('*.json')})
         # User blocks can differ from the saved state after the last item pass.
         self.assertGreater(max(r['saved_to_baseline_max_change'] for r in refs if r['side']=='user'),1e-12)
