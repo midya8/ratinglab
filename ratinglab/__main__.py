@@ -17,6 +17,7 @@ def read(path):
 
 def main():
     p=argparse.ArgumentParser(description='Observed-rating ALS, not top-N utility');s=p.add_subparsers(dest='command',required=True)
+    s.add_parser('batch-export');a=s.add_parser('batch');a.add_argument('--input',required=True);
     s.add_parser('report');s.add_parser('controls');a=s.add_parser('audit');a.add_argument('--report');a=s.add_parser('fit');a.add_argument('--output',required=True);a.add_argument('--budget',type=int,default=80)
     for command in ['predict','witness']:
         a=s.add_parser(command);a.add_argument('--model-id')
@@ -24,7 +25,15 @@ def main():
         else:a.add_argument('--side',choices=['user','item'],default='user');a.add_argument('--index',type=int,default=0)
     args=p.parse_args()
     try:
-        if args.command=='report':
+        if args.command=='batch-export':
+            from .batch_export import export
+            out=export()
+        elif args.command=='batch':
+            from .batch import response
+            d=read(args.input)
+            if not isinstance(d,dict) or not {'design','target','regularization','rows','query'}<=set(d) or set(d)-{'design','target','regularization','rows','query','deltas','delete'}:raise ValueError('batch requires design, target, regularization, rows, query; optional deltas/delete only')
+            out=response(**d)
+        elif args.command=='report':
             r=saved();out={k:r[k] for k in ['shape','selected_id','selected_bias_id','global_test_rmse','cold','protocol','scope']};out['metrics']=[{k:c[k] for k in ['id','train','validation','test','status']} for c in r['candidates']+r['bias_candidates']]
         elif args.command=='controls':out=controls()
         elif args.command=='audit':out=audit(read(args.report) if args.report else saved())
