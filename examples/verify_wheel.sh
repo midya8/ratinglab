@@ -10,8 +10,8 @@ python - <<'PY'
 import importlib,pkgutil,ratinglab
 mods=list(pkgutil.walk_packages(ratinglab.__path__,ratinglab.__name__+'.'))
 for m in mods:importlib.import_module(m.name)
-assert len(mods)==6,[m.name for m in mods]
-print('all seven modules including root imported outside checkout')
+assert len(mods)==7,[m.name for m in mods]
+print('all eight modules including root imported outside checkout')
 PY
 python -m ratinglab report > report.json
 python -m ratinglab audit > audit.json
@@ -30,3 +30,14 @@ assert len(json.load(open('predictions.json'))['predictions'])==2
 assert len(json.load(open('fresh-audit.json'))['candidates'])==11
 print('all six installed commands, eleven fresh fits and both complete-fit audits pass')
 PY
+
+python -m ratinglab.influence demo > influence.json
+python -m ratinglab.influence references --output influence-reference.json > influence-summary.json
+python - <<'PY2'
+import json
+from importlib.resources import files
+r=json.load(open('influence.json'));assert r['delete'] and r['max_normal_residual']<1e-10
+assert json.load(open('influence-reference.json'))==json.loads(files('ratinglab').joinpath('artifacts/influence-reference.json').read_text())
+assert json.load(open('influence-summary.json'))['references']==576
+print('both conditional-response module commands reproduce 576 references outside checkout')
+PY2
