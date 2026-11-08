@@ -52,11 +52,11 @@ Strict input: `{"pairs":[[0,0],[137,129]]}`. These are known stable user/item in
 ```sh
 python -m ratinglab predict --input pairs.json
 python -m pip wheel . --no-deps -w /tmp/wheels
-python -m pip install --target /tmp/installed /tmp/wheels/ratinglab-0.1.0-py3-none-any.whl
-bash examples/verify_wheel.sh /tmp/installed
+python -m pip install --target /tmp/installed /tmp/wheels/ratinglab-0.3.0-py3-none-any.whl
+bash examples/verify_wheel.sh /tmp/installed "$PWD"
 ```
 
-The installed wheel imports all seven modules including the package root and exercises six commands outside checkout, including all eleven fresh fits and complete saved/fresh fit audits. The browser exporter does not fit. Bounded per-candidate JSON artifacts reconstruct the full report without rounding. The original source CSV is retained byte-for-byte with a checked SHA256.
+The installed wheel imports all ten modules including the package root and exercises eight main CLI commands plus two single-row module commands outside checkout, including all eleven fresh fits and complete saved/fresh fit audits. The browser exporter does not fit. Bounded per-candidate JSON artifacts reconstruct the full report without rounding. The original source CSV is retained byte-for-byte with a checked SHA256.
 
 ## Why the caveats matter
 
@@ -78,3 +78,7 @@ Change or remove one training rating with the mean, penalty and every opposite-s
 The extension adds 60 independent rational design references, all 2,784 selected-model/control training-row deletion checks against fresh conditional solves and 576 native/scalar-JavaScript vector/leverage/query witnesses. Thirty Python and nine Node/real-Chrome tests in total, including physical keyboard edits, invalid-input recovery, copy/download and 320/390/1280 layouts. The eight-module installed wheel runs the original six commands plus `python -m ratinglab.influence demo` and `python -m ratinglab.influence references --output /tmp/influence-reference.json`.
 
 This is not full-model leave-one-out cross-validation or unlearning: frozen opposite factors and the training mean retain information from the original row. No causal influence, confidence interval or retraining bound is claimed. All original fits, scores, split, rating bytes, original score inference and original figure remain unchanged. The stronger bias-only control still slightly wins the original test.
+
+## Joint conditional batches, v0.3.0
+
+[Open the batch inspector](https://midya8.github.io/ratinglab/batch.html) or read [BATCH.md](BATCH.md). Select multiple original training rows in one frozen user/item ridge block. Finite target edits add; joint deletions solve a coupled Schur system and generally differ from a sum of separate-original-baseline deletions. Empty/full/single cases, conservative positivity bound, condition refusal, saved-versus-re-solved baseline, independent rational/direct least-squares checks and source-bound JSON stay visible. This is not full ALS retraining, causal influence, cross-validation or data unlearning. Original fits, splits and metrics are unchanged.

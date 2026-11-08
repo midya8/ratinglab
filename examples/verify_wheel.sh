@@ -10,8 +10,8 @@ python - <<'PY'
 import importlib,pkgutil,ratinglab
 mods=list(pkgutil.walk_packages(ratinglab.__path__,ratinglab.__name__+'.'))
 for m in mods:importlib.import_module(m.name)
-assert len(mods)==7,[m.name for m in mods]
-print('all eight modules including root imported outside checkout')
+assert len(mods)==9,[m.name for m in mods]
+print('all ten modules including root imported outside checkout')
 PY
 python -m ratinglab report > report.json
 python -m ratinglab audit > audit.json
@@ -67,3 +67,27 @@ compare(rounded,expected)
 assert json.load(open('influence-summary.json'))['references']==576
 print('both conditional-response module commands reproduce 576 references outside checkout')
 PY2
+
+python -m ratinglab batch --input "$2/examples/batch.json" > batch.json
+python -m ratinglab batch-export > batch-reference.json
+python - <<'PY3'
+import json, math
+from importlib.resources import files
+w=json.load(open('batch.json'));assert abs(w['interaction']+.675)<1e-12
+actual=json.load(open('batch-reference.json'))
+expected=json.loads(files('ratinglab').joinpath('artifacts/batch-reference.json').read_text())
+def check(a,b):
+    if isinstance(b,dict):
+        assert a.keys()==b.keys()
+        for k in b:check(a[k],b[k])
+    elif isinstance(b,list):
+        assert len(a)==len(b)
+        for x,y in zip(a,b):check(x,y)
+    elif type(b) is float:assert math.isfinite(a) and math.isclose(a,b,rel_tol=2e-10,abs_tol=2e-10),(a,b)
+    else:assert a==b
+check(actual,expected);assert len(actual['cases'])==320 and len(actual['controls'])==4
+from ratinglab.batch import response
+from ratinglab.batch_export import export
+assert response([[1]],[2],1.,[],[1])['point']==[1.]
+print('both installed batch commands, complete320 references and4controls pass')
+PY3
