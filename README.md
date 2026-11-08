@@ -67,3 +67,14 @@ A shared orthogonal rotation leaves scores and the ridge penalty unchanged while
 Observed ratings are selected by their original data collection process. RMSE here does not measure missing-pair accuracy, top-N relevance, satisfaction or causal preferences. Raw scores can fall outside [0,2]; clipping is separately reported and does not determine selection. This is not restaurant advice.
 
 Original public UCI data is CC BY 4.0. No consumer profiles, names, restaurant metadata, coordinates, demographics, food/service auxiliary targets or private ratings are used in fitting or in the browser. The original five-column CSV is retained only as source evidence; only its user ID, item ID and overall-rating columns are read. [METHOD.md](METHOD.md) gives equations, hashes, split rules, source attribution and limits. MIT code; established methods, original implementation, no source-author endorsement.
+
+
+## v0.2: a block is not a retrain
+
+[Conditional edit/deletion inspector](https://midya8.github.io/ratinglab/influence.html) · [Derivation and limits](INFLUENCE.md)
+
+Change or remove one training rating with the mean, penalty and every opposite-side bias/factor frozen. The browser separates the original saved score, a fresh unmodified conditional baseline and the changed conditional score. A target edit has a finite linear response; a row deletion uses its residual and Sherman-Morrison denominator. The saved user block may move on re-solving even before the edit, so that movement stays separate.
+
+The extension adds 60 independent rational design references, all 2,784 selected-model/control training-row deletion checks against fresh conditional solves and 576 native/scalar-JavaScript vector/leverage/query witnesses. Thirty Python and nine Node/real-Chrome tests in total, including physical keyboard edits, invalid-input recovery, copy/download and 320/390/1280 layouts. The eight-module installed wheel runs the original six commands plus `python -m ratinglab.influence demo` and `python -m ratinglab.influence references --output /tmp/influence-reference.json`.
+
+This is not full-model leave-one-out cross-validation or unlearning: frozen opposite factors and the training mean retain information from the original row. No causal influence, confidence interval or retraining bound is claimed. All original fits, scores, split, rating bytes, original score inference and original figure remain unchanged. The stronger bias-only control still slightly wins the original test.
