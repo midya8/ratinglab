@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "ratinglab"
+version = "0.1.0"
+description = "Observed-only explicit rating ALS with ridge witnesses and honest controls"
+requires-python = ">=3.10"
+dependencies = ["numpy==2.2.6"]
+license = {text = "MIT code; CC BY 4.0 original UCI data"}
+[tool.setuptools]
+packages = ["ratinglab"]
+[tool.setuptools.package-data]
+ratinglab = ["data/*.csv", "data/*.md", "artifacts/*.json"]
