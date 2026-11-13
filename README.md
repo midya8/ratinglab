@@ -1,8 +1,12 @@
 # RatingLab
 
-**Missing is not zero. A lower training error is not a better recommender.**
+RatingLab fits explicit ratings with NumPy alternating ridge solves. Only
+observed user/item pairs enter the loss; zero is a real rating, not a missing
+value. The browser shows score terms, normal equations, objective histories
+and coordinate rotations.
 
-Observed-only explicit-rating matrix factorization, implemented with NumPy alternating ridge solves. The browser inspects every score term, shared coordinate rotations, normal equations and full objective histories. The stronger bias-only control stays, even though it slightly wins this test.
+A separately selected bias-only control slightly outperforms the factor model
+on the fixed test split. Both remain visible.
 
 ## What runs
 
@@ -13,7 +17,7 @@ Observed-only explicit-rating matrix factorization, implemented with NumPy alter
 - Separate scalar JavaScript inference checks all 12,771 model/observed-pair predictions. Real Chrome verifies eleven models, 33 user/item UI states, actual keyboard rotation, invalid-input recovery, clipboard denial/success, JSON download and 320/390/1280 layouts.
 - Sixty independent exact Fraction ridge-solve references, all model-gradient coordinates checked by central differences, eleven fresh fits, exact saved browser-export reproduction and test-label poisoning.
 
-## The result that stays visible
+## Fixed-split results
 
 Validation chooses `rank-2-lambda-3-seed-1`. On the frozen 233 test observations:
 
@@ -56,9 +60,9 @@ python -m pip install --target /tmp/installed /tmp/wheels/ratinglab-0.3.0-py3-no
 bash examples/verify_wheel.sh /tmp/installed "$PWD"
 ```
 
-The installed wheel imports all ten modules including the package root and exercises eight main CLI commands plus two single-row module commands outside checkout, including all eleven fresh fits and complete saved/fresh fit audits. The browser exporter does not fit. Bounded per-candidate JSON artifacts reconstruct the full report without rounding. The original source CSV is retained byte-for-byte with a checked SHA256.
+The current suite has 37 Python and fourteen Node/actual-Chrome tests. The installed wheel imports all ten modules including the package root and exercises eight main CLI commands plus two single-row module commands outside checkout, including all eleven fresh fits and complete saved/fresh fit audits. The browser exporter does not fit. Bounded per-candidate JSON artifacts reconstruct the full report without rounding. The original source CSV is retained byte-for-byte with a checked SHA256.
 
-## Why the caveats matter
+## Interpretation and limits
 
 The observed edge split is not chronological or a new-user/new-item test. All held-out entities happen to be warm; zero-factor cold fallback is only checked in a supplied synthetic control. An index lookup is not a learned cold-start preference model.
 
@@ -69,13 +73,20 @@ Observed ratings are selected by their original data collection process. RMSE he
 Original public UCI data is CC BY 4.0. No consumer profiles, names, restaurant metadata, coordinates, demographics, food/service auxiliary targets or private ratings are used in fitting or in the browser. The original five-column CSV is retained only as source evidence; only its user ID, item ID and overall-rating columns are read. [METHOD.md](METHOD.md) gives equations, hashes, split rules, source attribution and limits. MIT code; established methods, original implementation, no source-author endorsement.
 
 
-## v0.2: a block is not a retrain
+## Full fits and conditional edits
+
+`fit` updates both user and item parameters. The single-row inspector instead
+changes one rating while holding the mean, penalty and opposite-side parameters
+fixed. The batch inspector changes several rows in that same conditional block.
+Neither conditional calculation is full-model retraining or data unlearning.
+
+## v0.2: single-row conditional response
 
 [Conditional edit/deletion inspector](https://midya8.github.io/ratinglab/influence.html) · [Derivation and limits](INFLUENCE.md)
 
 Change or remove one training rating with the mean, penalty and every opposite-side bias/factor frozen. The browser separates the original saved score, a fresh unmodified conditional baseline and the changed conditional score. A target edit has a finite linear response; a row deletion uses its residual and Sherman-Morrison denominator. The saved user block may move on re-solving even before the edit, so that movement stays separate.
 
-The extension adds 60 independent rational design references, all 2,784 selected-model/control training-row deletion checks against fresh conditional solves and 576 native/scalar-JavaScript vector/leverage/query witnesses. Thirty Python and nine Node/real-Chrome tests in total, including physical keyboard edits, invalid-input recovery, copy/download and 320/390/1280 layouts. The eight-module installed wheel runs the original six commands plus `python -m ratinglab.influence demo` and `python -m ratinglab.influence references --output /tmp/influence-reference.json`.
+The extension adds 60 independent rational design references, all 2,784 selected-model/control training-row deletion checks against fresh conditional solves and 576 native/scalar-JavaScript vector/leverage/query witnesses. That release had thirty Python and nine Node/real-Chrome tests, including physical keyboard edits, invalid-input recovery, copy/download and 320/390/1280 layouts. Its eight-module installed wheel ran the original six commands plus `python -m ratinglab.influence demo` and `python -m ratinglab.influence references --output /tmp/influence-reference.json`.
 
 This is not full-model leave-one-out cross-validation or unlearning: frozen opposite factors and the training mean retain information from the original row. No causal influence, confidence interval or retraining bound is claimed. All original fits, scores, split, rating bytes, original score inference and original figure remain unchanged. The stronger bias-only control still slightly wins the original test.
 

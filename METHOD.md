@@ -23,7 +23,7 @@ Use all 233 test observations, not only a convenient warm subset. Count cold ent
 
 Raw RMSE and MAE are evaluated on observed pairs. Clipped-to-[0,2] RMSE and out-of-range counts are separate diagnostics. Selection uses raw RMSE only. The training-mean control is not a test mean. No top-N ranking, negative sampling, missing-rating truth, ranking quality, propensity adjustment or unbiased recommendation utility is claimed.
 
-## One precise objective
+## Training objective
 
 For observed TRAINING pairs Ω:
 
